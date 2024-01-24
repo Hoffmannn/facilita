@@ -13,3 +13,8 @@ export const addCustomer = async (customer: CustomerToAdd) => {
   );
   return response.data as Customer;
 };
+
+export const removeCustomer = async (id: number) => {
+  const response = await axios.delete(`http://localhost:3000/customers/${id}`);
+  return response.data;
+};

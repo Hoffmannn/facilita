@@ -1,7 +1,42 @@
 import { Table } from "@mantine/core";
 import React, { useContext, useEffect, useState } from "react";
-import { getAllCustomers } from "../../api/customers";
+import { getAllCustomers, removeCustomer } from "../../api/customers";
 import CustomersContext from "../../context/CustomersContext";
+import { IconTrash } from "@tabler/icons-react";
+import { Customer } from "../../types/Customer";
+
+const RowItem = ({ customer }: { customer: Customer }) => {
+  const { customers, setCustomers } = useContext(CustomersContext);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = () => {
+    if (!isDeleting) {
+      setIsDeleting(true);
+    } else {
+      if (!customers) return; // just to avoid typescript error
+      removeCustomer(customer.id).then(() => {
+        setCustomers(
+          customers.filter((customerItem) => customerItem.id !== customer.id)
+        );
+      });
+    }
+  };
+
+  return (
+    <Table.Tr key={customer.id}>
+      <Table.Td>{customer.name}</Table.Td>
+      <Table.Td>{customer.phone}</Table.Td>
+      <Table.Td>{customer.email}</Table.Td>
+      <Table.Td align="center">
+        <IconTrash
+          cursor="pointer"
+          onClick={handleDelete}
+          color={isDeleting ? "red" : "gray"}
+        />
+      </Table.Td>
+    </Table.Tr>
+  );
+};
 
 const CustomersTable: React.FC = () => {
   const { customers, setCustomers } = useContext(CustomersContext);
@@ -24,17 +59,12 @@ const CustomersTable: React.FC = () => {
           <Table.Th>Nome</Table.Th>
           <Table.Th>Telefone</Table.Th>
           <Table.Th>Email</Table.Th>
-          <Table.Th>Ações</Table.Th>
+          <Table.Th style={{ textAlign: "center" }}>Ações</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
         {customers?.map((customer) => (
-          <Table.Tr key={customer.id}>
-            <Table.Td>{customer.name}</Table.Td>
-            <Table.Td>{customer.phone}</Table.Td>
-            <Table.Td>{customer.email}</Table.Td>
-            <Table.Td>Editar / Deletar</Table.Td>
-          </Table.Tr>
+          <RowItem key={customer.id} customer={customer} />
         ))}
       </Table.Tbody>
     </Table>
