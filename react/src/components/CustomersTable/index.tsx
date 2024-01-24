@@ -1,8 +1,8 @@
-import { Table } from "@mantine/core";
-import React, { useContext, useEffect, useState } from "react";
+import { Table, TextInput } from "@mantine/core";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { getAllCustomers, removeCustomer } from "../../api/customers";
 import CustomersContext from "../../context/CustomersContext";
-import { IconTrash } from "@tabler/icons-react";
+import { IconSearch, IconTrash } from "@tabler/icons-react";
 import { Customer } from "../../types/Customer";
 
 const RowItem = ({ customer }: { customer: Customer }) => {
@@ -40,34 +40,62 @@ const RowItem = ({ customer }: { customer: Customer }) => {
 
 const CustomersTable: React.FC = () => {
   const { customers, setCustomers } = useContext(CustomersContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const [search, setSearch] = useState("");
+
+  const filteredData = useMemo(() => {
+    console.log("customers", customers);
+    console.log("search", search);
+    return search === ""
+      ? customers
+      : customers?.filter((customer) => {
+          return (
+            customer.name.toLowerCase().includes(search.toLowerCase()) ||
+            customer.phone.toLowerCase().includes(search.toLowerCase()) ||
+            customer.email.toLowerCase().includes(search.toLowerCase())
+          );
+        });
+  }, [customers, search]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
 
   useEffect(() => {
-    if (customers === null && !isLoading) {
-      setIsLoading(true);
+    if (!hasLoaded) {
+      setHasLoaded(true);
       getAllCustomers().then((response) => {
         setCustomers(response);
-        setIsLoading(false);
       });
     }
-  }, [customers, isLoading, setCustomers]);
+  }, [customers, hasLoaded, setCustomers]);
 
   return (
-    <Table striped highlightOnHover withTableBorder withColumnBorders>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Nome</Table.Th>
-          <Table.Th>Telefone</Table.Th>
-          <Table.Th>Email</Table.Th>
-          <Table.Th style={{ textAlign: "center" }}>Ações</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {customers?.map((customer) => (
-          <RowItem key={customer.id} customer={customer} />
-        ))}
-      </Table.Tbody>
-    </Table>
+    <>
+      <TextInput
+        placeholder="Search by any field"
+        mb="md"
+        leftSection={<IconSearch />}
+        value={search}
+        onChange={handleSearchChange}
+      />
+      <Table striped highlightOnHover withTableBorder withColumnBorders>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Nome</Table.Th>
+            <Table.Th>Telefone</Table.Th>
+            <Table.Th>Email</Table.Th>
+            <Table.Th style={{ textAlign: "center" }}>Ações</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {filteredData?.map((customer) => (
+            <RowItem key={customer.id} customer={customer} />
+          ))}
+        </Table.Tbody>
+      </Table>
+    </>
   );
 };
 

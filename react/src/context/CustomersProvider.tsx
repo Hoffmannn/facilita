@@ -3,7 +3,7 @@ import CustomersContext from "./CustomersContext";
 import { Customer } from "../types/Customer";
 
 const CustomersProvider = ({ children }: { children: ReactNode }) => {
-  const [customers, setCustomers] = useState<Customer[] | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>();
   const [loading, setLoading] = useState(false);
   return (
     <CustomersContext.Provider
