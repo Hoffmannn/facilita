@@ -40,6 +40,7 @@ const CustomerDrawer = ({
   const handleRegisterCustomer = (customer: CustomerToAdd) => {
     addCustomer(customer).then((res) => {
       setCustomers([...(customers || []), res]);
+      form.reset();
       close();
     });
   };

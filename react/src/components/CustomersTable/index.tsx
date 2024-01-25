@@ -13,7 +13,7 @@ const RowItem = ({ customer }: { customer: Customer }) => {
     if (!isDeleting) {
       setIsDeleting(true);
     } else {
-      if (!customers) return; // just to avoid typescript error
+      if (!customers) return;
       removeCustomer(customer.id).then(() => {
         setCustomers(
           customers.filter((customerItem) => customerItem.id !== customer.id)
@@ -45,8 +45,6 @@ const CustomersTable: React.FC = () => {
   const [search, setSearch] = useState("");
 
   const filteredData = useMemo(() => {
-    console.log("customers", customers);
-    console.log("search", search);
     return search === ""
       ? customers
       : customers?.filter((customer) => {
@@ -74,7 +72,7 @@ const CustomersTable: React.FC = () => {
   return (
     <>
       <TextInput
-        placeholder="Search by any field"
+        placeholder="Procure por qualquer campo"
         mb="md"
         leftSection={<IconSearch />}
         value={search}

@@ -3,8 +3,8 @@ export type Customer = {
   name: string;
   phone: string;
   email: string;
-  coordinateX?: number;
-  coordinateY?: number;
+  coordinate_x?: number;
+  coordinate_y?: number;
 };
 
 export type CustomerToAdd = {

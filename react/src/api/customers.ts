@@ -18,3 +18,8 @@ export const removeCustomer = async (id: number) => {
   const response = await axios.delete(`http://localhost:3000/customers/${id}`);
   return response.data;
 };
+
+export const calculateRoute = async () => {
+  const response = await axios.get("http://localhost:3000/calculateRoute");
+  return response.data;
+};

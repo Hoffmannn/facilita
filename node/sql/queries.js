@@ -28,7 +28,10 @@ const getCustomerById = (request, response) => {
 };
 
 const createCustomer = (request, response) => {
-  const { name, email, phone, coordinateX, coordinateY } = request.body;
+  const { name, email, phone } = request.body;
+
+  const coordinateX = Math.floor(Math.random() * 200 - 100);
+  const coordinateY = Math.floor(Math.random() * 200 - 100);
 
   pool.query(
     "INSERT INTO customers (name, email, phone, coordinate_x, coordinate_y) VALUES ($1, $2, $3, $4, $5) RETURNING *",
@@ -69,10 +72,73 @@ const deleteCustomer = (request, response) => {
   });
 };
 
+const calculateRoute = (request, response) => {
+  pool.query("SELECT * FROM customers ", (error, results) => {
+    const customers = results.rows;
+    const distances = [];
+
+    // Calculate the distance between each pair of customers
+    for (let i = 0; i < customers.length; i++) {
+      distances[i] = [];
+      for (let j = 0; j < customers.length; j++) {
+        const dx = customers[i].coordinate_x - customers[j].coordinate_x;
+        const dy = customers[i].coordinate_y - customers[j].coordinate_y;
+        distances[i][j] = Math.sqrt(dx ** 2 + dy ** 2);
+      }
+    }
+
+    // Find the shortest route using the TSP algorithm
+    const route = tsp(distances);
+
+    response
+      .status(200)
+      .json(route.map((i) => customers[i]).filter((route) => route));
+  });
+};
+
+// Traveling Salesman Problem algorithm (Caixeiro viajante)
+function tsp(distances) {
+  const numberOfCities = distances.length;
+  const visitedCities = new Array(numberOfCities).fill(false);
+  visitedCities[0] = true;
+  const shortestRoute = [0];
+
+  for (
+    let currentCityIndex = 0;
+    currentCityIndex < numberOfCities - 1;
+    currentCityIndex++
+  ) {
+    let minDistance = Infinity;
+    let nextCityIndex = -1;
+
+    for (
+      let candidateCityIndex = 0;
+      candidateCityIndex < numberOfCities;
+      candidateCityIndex++
+    ) {
+      if (
+        !visitedCities[candidateCityIndex] &&
+        distances[shortestRoute[currentCityIndex]][candidateCityIndex] <
+          minDistance
+      ) {
+        minDistance =
+          distances[shortestRoute[currentCityIndex]][candidateCityIndex];
+        nextCityIndex = candidateCityIndex;
+      }
+    }
+
+    visitedCities[nextCityIndex] = true;
+    shortestRoute.push(nextCityIndex);
+  }
+
+  return shortestRoute;
+}
+
 module.exports = {
   getAllCustomers,
   getCustomerById,
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  calculateRoute,
 };

@@ -22,3 +22,4 @@ app.get("/customers/:id", queries.getCustomerById);
 app.post("/customers", queries.createCustomer);
 app.put("/customers/:id", queries.updateCustomer);
 app.delete("/customers/:id", queries.deleteCustomer);
+app.get("/calculateRoute", queries.calculateRoute);
