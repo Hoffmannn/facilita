@@ -14,7 +14,7 @@ app.use(
 );
 
 app.listen(port, () => {
-  console.log(`Aplicação roando na porta ${port}.`);
+  console.log(`Aplicação rodando na porta ${port}.`);
 });
 
 app.get("/customers", queries.getAllCustomers);

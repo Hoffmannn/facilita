@@ -1,0 +1,9 @@
+{
+    "name": "facilita",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "concurrently \"npm run start:node\" \"npm run start:react\"",
+      "start:node": "cd node && nodemon index.js",
+      "start:react": "cd react && npm start" 
+    } 
+  }
