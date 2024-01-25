@@ -8,7 +8,7 @@
 
  
 ## Rodando o projeto
-
+(Node versão 18.17.1 foi utilizada)
 ### Instale `concurrently` e `nodemon` globalmente
 `npm i -g concurrently`
 `npm i -g nodemon`
