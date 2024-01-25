@@ -12,7 +12,7 @@ const getAllCustomers = (_request, response) => {
     if (error) {
       throw error;
     }
-    response.status(200).json(results.rows);
+    response.status(200).json(results?.rows || []);
   });
 };
 
@@ -74,8 +74,12 @@ const deleteCustomer = (request, response) => {
 
 const calculateRoute = (request, response) => {
   pool.query("SELECT * FROM customers ", (error, results) => {
-    const customers = results.rows;
+    const customers = results?.rows;
     const distances = [];
+
+    if (!customers) {
+      return response.status(200).json([]);
+    }
 
     // Calculate the distance between each pair of customers
     for (let i = 0; i < customers.length; i++) {
